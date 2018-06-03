@@ -1,5 +1,6 @@
 package com.kuzdowicz.spark.tutorials
 
+import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.{SaveMode, SparkSession}
 
@@ -13,13 +14,16 @@ case class MostPopularMovieResult(title: String, clicks: Int)
 
 object PopularMovies extends App {
 
-  private val outputPath = "output"
-  private val inputPath = "data/small/ml-latest-small"
+  private val config: Config = ConfigFactory.load()
   private val log = Logger.getLogger(getClass)
+
+  private val inputPath = config.getString("app.inputPath")
+  private val outputPath = config.getString("app.outputPath")
+  private val appName = config.getString("app.name")
 
   val spark = SparkSession.builder()
     .master("local")
-    .appName("most-popular-movies")
+    .appName(appName)
     .getOrCreate()
 
   spark.sparkContext.setLogLevel(Level.ERROR.toString)
